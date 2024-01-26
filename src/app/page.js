@@ -1,7 +1,11 @@
-"client side";
-import React from "react";
+// "client side";
+"use client";
+
+import Script from "next/script";
+import React, { useEffect, useState } from "react";
 
 const Stepper = () => {
+
   const steps = [
     {
       number: 1,
@@ -22,6 +26,7 @@ const Stepper = () => {
       color: "gray",
     },
   ];
+
   return (
     <div className="w-[614px] h-[55px] justify-start items-center gap-[76px] inline-flex">
       <div className="justify-start items-start gap-[78px] flex">
@@ -69,12 +74,39 @@ const Stepper = () => {
   );
 };
 
-if (typeof window !== "undefined") {
-  console.log(localStorage.getItem('gateway'));
-}
+
 
 const Payment = () => {
-  const gateway = 1;
+
+  const [gateway, setGateway] = useState('');
+  const [gatewayFetched, setGatewayFetched] = useState(false);
+
+  useEffect(() => {
+
+    const storedGateway = localStorage.getItem('gateway');
+    if (storedGateway) {
+      setGateway(storedGateway);
+      if (storedGateway == 'razor') {
+        setGatewayFetched(true);
+      }
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (gatewayFetched) {
+      const Script = document.createElement("script");
+      //id should be same as given to form element
+      const Form = document.getElementById('donateForm');
+      Script.setAttribute('src', 'https://cdn.razorpay.com/static/widget/payment-button.js')
+      Script.setAttribute('data-payment_button_id', 'pl_LatgEd6cmU5N1L')
+      Script.setAttribute('data-button_text', 'Buy Now')
+      Script.setAttribute('data-button_theme', 'brand-color')
+      Form.appendChild(Script);
+    }
+  }, [gatewayFetched])
+
+
   return (
     <div className="w-[1132px] h-[425px] justify-start items-start gap-8 inline-flex">
       <div className="flex-col justify-start items-start gap-6 inline-flex">
@@ -280,40 +312,32 @@ const Payment = () => {
             </div>
           </div>
         </div>
-        <div className="w-[400px] p-4bg-opacity-80 rounded-lg justify-center items-center gap-2.5 inline-flex">
-          {gateway === 1 ? (
-            <form>
-              <script
-                src="https://cdn.razorpay.com/static/widget/payment-button.js"
-                data-payment_button_id="pl_LatgEd6cmU5N1L"
-                data-button_text="Buy Now"
-                data-button_theme="brand-color"
-              ></script>
-            </form>
-          ) : (
-            <form
-              action="https://www.sandbox.paypal.com/cgi-bin/webscr"
-              method="post"
-            >
-              <input type="hidden" name="cmd" value="_s-xclick" />
-              <input
-                type="hidden"
-                name="hosted_button_id"
-                value="6RNT8A4HBBJRE"
-              />
-              <input
-                type="image"
-                src="https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_buynow_107x26.png"
-                alt="Buy Now"
-              />
-              <img
-                alt=""
-                src="https://paypalobjects.com/en_US/i/scr/pixel.gif"
-                width="1"
-                height="1"
-              />
-            </form>
-          )}
+        <div className="w-[400px] p-4 bg-opacity-80 rounded-lg justify-center items-center gap-2.5 inline-flex">
+          {
+            gateway === 'razor' ? (<form id="donateForm"></form>)
+              : gateway === 'paypal' ? (<form
+                action="https://www.sandbox.paypal.com/cgi-bin/webscr"
+                method="post"
+              >
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input
+                  type="hidden"
+                  name="hosted_button_id"
+                  value="6RNT8A4HBBJRE"
+                />
+                <input
+                  type="image"
+                  src="https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_buynow_107x26.png"
+                  alt="Buy Now"
+                />
+                <img
+                  alt=""
+                  src="https://paypalobjects.com/en_US/i/scr/pixel.gif"
+                  width="1"
+                  height="1"
+                />
+              </form>) : "Loading..."
+          }
         </div>
       </div>
     </div>
@@ -321,6 +345,7 @@ const Payment = () => {
 };
 
 const page = () => {
+
   return (
     <div className="flex flex-col space-y-5 justify-center items-center w-full p-10 h-screen">
       <div id="topBar">
