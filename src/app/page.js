@@ -78,7 +78,7 @@ const Stepper = () => {
 
 const Payment = () => {
 
-  const [gateway, setGateway] = useState('razor');
+  const [gateway, setGateway] = useState('');
   const [gatewayFetched, setGatewayFetched] = useState(false);
 
   useEffect(() => {
@@ -89,6 +89,9 @@ const Payment = () => {
       if (storedGateway == 'razor') {
         setGatewayFetched(true);
       }
+    }
+    else {
+      setGateway('razor');
     }
   }, []);
 
@@ -104,8 +107,17 @@ const Payment = () => {
       Script.setAttribute('data-button_theme', 'brand-color')
       Form.appendChild(Script);
     }
-  }, [gatewayFetched])
-
+    else if (gateway === 'razor') {
+      const Script = document.createElement("script");
+      //id should be same as given to form element
+      const Form = document.getElementById('donateForm');
+      Script.setAttribute('src', 'https://cdn.razorpay.com/static/widget/payment-button.js')
+      Script.setAttribute('data-payment_button_id', 'pl_LatgEd6cmU5N1L')
+      Script.setAttribute('data-button_text', 'Buy Now')
+      Script.setAttribute('data-button_theme', 'brand-color')
+      Form.appendChild(Script);
+    }
+  }, [gatewayFetched, gateway])
 
   return (
     <div className="w-[1132px] h-[425px] justify-start items-start gap-8 inline-flex">
