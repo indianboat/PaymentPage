@@ -78,7 +78,7 @@ const Stepper = () => {
 
 const Payment = () => {
 
-  const [gateway, setGateway] = useState('');
+  const [gateway, setGateway] = useState('razor');
   const [gatewayFetched, setGatewayFetched] = useState(false);
 
   useEffect(() => {
